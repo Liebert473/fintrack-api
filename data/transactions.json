@@ -1,0 +1,255 @@
+[
+  {
+    "id": "01b7b879-0864-4148-bdfa-194232aaa764",
+    "type": "expense",
+    "amount": 10,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-05-15",
+    "category": {
+      "id": "1ac80a78-02d5-432f-a0b1-d6c2d275645c",
+      "name": "Transport"
+    }
+  },
+  {
+    "id": "68f9137e-2a2b-4ad7-b226-eb510d480861",
+    "type": "expense",
+    "amount": 100,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-05-14",
+    "category": {
+      "id": "f6e29ab1-6466-4c5d-95b8-31db6f7a04ff",
+      "name": "Utilities"
+    }
+  },
+  {
+    "id": "578b0fed-cb71-4c42-abde-78cb8fffede8",
+    "type": "expense",
+    "amount": 6,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-05-10",
+    "category": {
+      "id": "f1d03494-4f1d-46f0-89b7-0f3558e4e164",
+      "name": "Coffee"
+    }
+  },
+  {
+    "id": "19",
+    "type": "expense",
+    "amount": 16,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-13",
+    "category": {
+      "id": "f1d03494-4f1d-46f0-89b7-0f3558e4e164",
+      "name": "Coffee"
+    }
+  },
+  {
+    "id": "20",
+    "type": "income",
+    "amount": 200,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-13",
+    "category": {
+      "id": "a1b2c3d4-e5f6-7890-abcd-000000000002",
+      "name": "Freelancing"
+    }
+  },
+  {
+    "id": "17",
+    "type": "income",
+    "amount": 400,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-12",
+    "category": {
+      "id": "a1b2c3d4-e5f6-7890-abcd-000000000006",
+      "name": "Rental Income"
+    }
+  },
+  {
+    "id": "18",
+    "type": "expense",
+    "amount": 60,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-12",
+    "category": {
+      "id": "e1c3f370-f01a-4ee1-9c34-caaadf89f7fb",
+      "name": "Entertainment"
+    }
+  },
+  {
+    "id": "16",
+    "type": "expense",
+    "amount": 22,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-11",
+    "category": {
+      "id": "03024c7e-2c60-4a20-b44c-fceee44f65ce",
+      "name": "Education"
+    }
+  },
+  {
+    "id": "14",
+    "type": "income",
+    "amount": 100,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-10",
+    "category": {
+      "id": "a1b2c3d4-e5f6-7890-abcd-000000000005",
+      "name": "Dividends"
+    }
+  },
+  {
+    "id": "15",
+    "type": "expense",
+    "amount": 120,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-10",
+    "category": {
+      "id": "f6e29ab1-6466-4c5d-95b8-31db6f7a04ff",
+      "name": "Utilities"
+    }
+  },
+  {
+    "id": "13",
+    "type": "expense",
+    "amount": 50,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-09",
+    "category": {
+      "id": "72893de4-1b83-47f3-a67a-5dd15a4ff9b1",
+      "name": "Fitness"
+    }
+  },
+  {
+    "id": "11",
+    "type": "expense",
+    "amount": 65,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-08",
+    "category": {
+      "id": "603f3b0d-8a9e-4f92-a626-fd1d6c7c03c6",
+      "name": "Gifts"
+    }
+  },
+  {
+    "id": "12",
+    "type": "expense",
+    "amount": 19.99,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-08",
+    "category": {
+      "id": "c1b3f387-2065-4c3a-a63c-99d4b9028b91",
+      "name": "Subscriptions"
+    }
+  },
+  {
+    "id": "10",
+    "type": "income",
+    "amount": 300,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-07",
+    "category": {
+      "id": "a1b2c3d4-e5f6-7890-abcd-000000000003",
+      "name": "Investments"
+    }
+  },
+  {
+    "id": "9",
+    "type": "expense",
+    "amount": 10,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-06",
+    "category": {
+      "id": "f1d03494-4f1d-46f0-89b7-0f3558e4e164",
+      "name": "Coffee"
+    }
+  },
+  {
+    "id": "7",
+    "type": "income",
+    "amount": 500,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-05",
+    "category": {
+      "id": "a1b2c3d4-e5f6-7890-abcd-000000000002",
+      "name": "Freelancing"
+    }
+  },
+  {
+    "id": "8",
+    "type": "expense",
+    "amount": 45,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-05",
+    "category": {
+      "id": "1ac80a78-02d5-432f-a0b1-d6c2d275645c",
+      "name": "Transport"
+    }
+  },
+  {
+    "id": "5",
+    "type": "expense",
+    "amount": 25,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-04",
+    "category": {
+      "id": "6cf1873e-ec82-4b1e-9f3c-d35205dc518c",
+      "name": "Groceries"
+    }
+  },
+  {
+    "id": "6",
+    "type": "expense",
+    "amount": 15.75,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-04",
+    "category": {
+      "id": "3bcf1d7d-c9a3-4d0d-b8c6-034022843e35",
+      "name": "Dining"
+    }
+  },
+  {
+    "id": "4",
+    "type": "expense",
+    "amount": 35,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-03",
+    "category": {
+      "id": "78ef44ef-6ee9-4eb1-b9ae-3ce9677e8889",
+      "name": "Health"
+    }
+  },
+  {
+    "id": "2",
+    "type": "expense",
+    "amount": 80,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-02",
+    "category": {
+      "id": "4c5d1ee8-7ba3-4727-b3f3-224a8a17d143",
+      "name": "Shopping"
+    }
+  },
+  {
+    "id": "3",
+    "type": "income",
+    "amount": 2000,
+    "account": "9c1b9215-8903-41f8-8094-3458849259da",
+    "date": "2025-04-02",
+    "category": {
+      "id": "a1b2c3d4-e5f6-7890-abcd-000000000001",
+      "name": "Salary"
+    }
+  },
+  {
+    "id": "1",
+    "type": "expense",
+    "amount": 12.5,
+    "account": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "date": "2025-04-01",
+    "category": {
+      "id": "f1d03494-4f1d-46f0-89b7-0f3558e4e164",
+      "name": "Coffee"
+    }
+  }
+]

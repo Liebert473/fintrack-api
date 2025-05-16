@@ -1,0 +1,12 @@
+[
+  {
+    "id": "9c1b9215-8903-41f8-8094-3458849259da",
+    "name": "Personal",
+    "initialBalance": 1000
+  },
+  {
+    "id": "32085b82-aab5-4a2d-9222-c244c87a5d8e",
+    "name": "Bussiness",
+    "initialBalance": 3000
+  }
+]

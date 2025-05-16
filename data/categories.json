@@ -1,0 +1,70 @@
+[
+  {
+    "id": "f1d03494-4f1d-46f0-89b7-0f3558e4e164",
+    "name": "Coffee"
+  },
+  {
+    "id": "03024c7e-2c60-4a20-b44c-fceee44f65ce",
+    "name": "Education"
+  },
+  {
+    "id": "4c5d1ee8-7ba3-4727-b3f3-224a8a17d143",
+    "name": "Shopping"
+  },
+  {
+    "id": "6cf1873e-ec82-4b1e-9f3c-d35205dc518c",
+    "name": "Groceries"
+  },
+  {
+    "id": "1ac80a78-02d5-432f-a0b1-d6c2d275645c",
+    "name": "Transport"
+  },
+  {
+    "id": "78ef44ef-6ee9-4eb1-b9ae-3ce9677e8889",
+    "name": "Health"
+  },
+  {
+    "id": "e1c3f370-f01a-4ee1-9c34-caaadf89f7fb",
+    "name": "Entertainment"
+  },
+  {
+    "id": "f6e29ab1-6466-4c5d-95b8-31db6f7a04ff",
+    "name": "Utilities"
+  },
+  {
+    "id": "3bcf1d7d-c9a3-4d0d-b8c6-034022843e35",
+    "name": "Dining"
+  },
+  {
+    "id": "c1b3f387-2065-4c3a-a63c-99d4b9028b91",
+    "name": "Subscriptions"
+  },
+  {
+    "id": "72893de4-1b83-47f3-a67a-5dd15a4ff9b1",
+    "name": "Fitness"
+  },
+  {
+    "id": "603f3b0d-8a9e-4f92-a626-fd1d6c7c03c6",
+    "name": "Gifts"
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-000000000001",
+    "name": "Salary"
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-000000000002",
+    "name": "Freelancing"
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-000000000003",
+    "name": "Investments"
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-000000000005",
+    "name": "Dividends"
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-000000000006",
+    "name": "Rental Income"
+  }
+]
