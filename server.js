@@ -6,7 +6,7 @@ import AccountRoute from './routes/AccountRoute.js';
 import CategoryRoute from './routes/CategoryRoute.js';
 import StatisticRoute from './routes/StatisticRoute.js'
 
-const port = 5500
+const PORT = 5500
 
 app.use(cors());
 app.use(express.json());
