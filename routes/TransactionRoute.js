@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router()
 import fs from "fs";
 const file_path = "./data/transactions.json"
-import Transactions from '../models/Transactions';
+import Transactions from '../models/Transaction';
 
 async function GetData() {
   const transactions = await Transactions.find()
