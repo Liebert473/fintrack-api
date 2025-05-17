@@ -3,10 +3,11 @@ import express from 'express';
 const router = express.Router()
 import fs from "fs";
 const file_path = "./data/transactions.json"
-import Transaction from "../models/Transaction.js"
+import { connectToDB } from '../db';
 
 async function GetData() {
-  const transactions = await Transaction.find({})
+  const db = await connectToDB()
+  const transactions = await db.collection('transactions').find().toArray();
   return transactions
 }
 
