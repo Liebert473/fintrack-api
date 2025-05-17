@@ -3,10 +3,10 @@ import express from 'express';
 const router = express.Router()
 import fs from "fs";
 const file_path = "./data/transactions.json"
-import Transactions from '../models/Transaction';
+import Transaction from '../models/Transaction';
 
 async function GetData() {
-  const transactions = await Transactions.find()
+  const transactions = await Transaction.find()
   return transactions
 }
 
