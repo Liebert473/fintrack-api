@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router()
 import fs from "fs";
 const file_path = "./data/transactions.json"
-import { connectToDB } from '../db';
+import { connectToDB } from "../db.js";
 
 async function GetData() {
   const db = await connectToDB()
@@ -23,8 +23,8 @@ function WriteData(transactions) {
 }
 
 // Get all transactions (no filter)
-router.get('/api/transactions', (req, res) => {
-  const transactions = GetData();
+router.get('/api/transactions', async (req, res) => {
+  const transactions = await GetData();
   res.json(transactions);
 });
 
