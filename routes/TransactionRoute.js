@@ -67,7 +67,7 @@ router.get("/api/transactions/filter", async (req, res) => {
       return res.status(400).json({ message: "Missing endDate or days" });
     }
 
-    const { results, dates } = GetDataByDateRange(endDate, parseInt(days), type);
+    const { results, dates } = await GetDataByDateRange(endDate, parseInt(days), type);
     const allDataLength = type ? transactions.filter(x => x.type === type).length : transactions.length;
 
     return res.json({
