@@ -3,16 +3,11 @@ import express from 'express';
 const router = express.Router()
 import fs from "fs";
 const file_path = "./data/transactions.json"
+import Transactions from '../models/Transactions';
 
-function GetData() {
-  try {
-    const data = fs.readFileSync(file_path, "utf8");
-    const transactions = JSON.parse(data);
-    return transactions;
-  } catch (err) {
-    console.error("Error reading transactions file:", err);
-    return [];
-  }
+async function GetData() {
+  const transactions = await Transactions.find()
+  return transactions
 }
 
 function WriteData(transactions) {
