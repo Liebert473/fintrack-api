@@ -93,7 +93,7 @@ router.get("/api/transactions/filter", async (req, res) => {
     transactions = transactions.filter(x => x.account == account)
   }
   if (category) {
-    transactions = transactions.filter(x => x.category.id == category)
+    transactions = transactions.filter(x => x.category._id == category)
   }
   if (fromDate) {
     transactions = transactions.filter(x => x.date >= fromDate)
@@ -118,7 +118,7 @@ router.get("/api/transactions/filter", async (req, res) => {
 // Get a transaction by ID
 router.get('/api/tarnsactions/:id', async (req, res) => {
   const transactions = await GetTransactions()
-  const transaction = transactions.find(t => t.id === req.params.id)
+  const transaction = transactions.find(t => t._id === req.params._id)
   if (!transaction) {
     return res.status(404).json({ message: 'Transaction not found' })
   }
@@ -138,7 +138,7 @@ router.post('/api/transactions', async (req, res) => {
 // Update a transaction
 router.put('/api/transactions/:id', async (req, res) => {
   let transactions = await GetTransactions()
-  const index = transactions.findIndex(t => t.id === req.params.id)
+  const index = transactions.findIndex(t => t._id === req.params._id)
   if (index === -1) {
     return res.status(404).json({ message: 'Transaction not found' })
   }
@@ -150,7 +150,7 @@ router.put('/api/transactions/:id', async (req, res) => {
 // Delete a transaction
 router.delete('/api/transactions/:id', async (req, res) => {
   let transactions = await GetTransactions()
-  transactions = transactions.filter(t => t.id !== req.params.id)
+  transactions = transactions.filter(t => t._id !== req.params._id)
   WriteData(transactions)
   res.json({ message: 'Transaction deleted successfully' })
 }

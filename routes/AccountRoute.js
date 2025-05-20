@@ -38,7 +38,7 @@ function WriteData(accounts) {
 }
 
 function getAccountData(account, allTransactions) {
-    const accountTransactions = allTransactions.filter(tx => tx.account === account.id);
+    const accountTransactions = allTransactions.filter(tx => tx.account === account._id);
 
     const incomes = Number(
         accountTransactions
@@ -85,7 +85,7 @@ router.post('/api/accounts', async (req, res) => {
 // Update a account
 router.put('/api/accounts/:id', async (req, res) => {
     let accounts = await GetAccounts()
-    const index = accounts.findIndex(t => t.id === req.params.id)
+    const index = accounts.findIndex(t => t._id === req.params._id)
     if (index === -1) {
         return res.status(404).json({ message: 'account not found' })
     }
@@ -97,12 +97,12 @@ router.put('/api/accounts/:id', async (req, res) => {
 // Delete a account
 router.delete('/api/accounts/:id', async (req, res) => {
     let accounts = await GetAccounts()
-    accounts = accounts.filter(t => t.id !== req.params.id)
+    accounts = accounts.filter(t => t._id !== req.params._id)
     WriteData(accounts)
     res.json({ message: 'Account deleted successfully' })
 
     let transactions = await GetTransactions()
-    transactions = transactions.filter(t => t.account !== req.params.id)
+    transactions = transactions.filter(t => t.account !== req.params._id)
     WriteTransactions(transactions)
 }
 )

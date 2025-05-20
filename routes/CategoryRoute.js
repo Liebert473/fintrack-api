@@ -51,8 +51,8 @@ router.get('/api/categories', async (req, res) => {
 //Get category by id
 router.get('/api/categories/:id', async (req, res) => {
     const categories = await GetCategories();
-    const id = req.params.id
-    res.json(categories.find(x => x.id == id))
+    const id = req.params._id
+    res.json(categories.find(x => x._id == id))
 });
 
 
@@ -68,7 +68,7 @@ router.post('/api/categories', async (req, res) => {
 // Update a category
 router.put('/api/categories/:id', async (req, res) => {
     let categories = await GetCategories();
-    const index = categories.findIndex(t => t.id === req.params.id);
+    const index = categories.findIndex(t => t._id === req.params._id);
 
     if (index === -1) {
         return res.status(404).json({ message: 'Category not found' });
@@ -83,7 +83,7 @@ router.put('/api/categories/:id', async (req, res) => {
     let transactions = await GetTransactions();
 
     transactions = transactions.map(tx => {
-        if (tx.category?.id === updatedCategory.id) {
+        if (tx.category?._id === updatedCategory._id) {
             return {
                 ...tx,
                 category: {
@@ -107,12 +107,12 @@ router.put('/api/categories/:id', async (req, res) => {
 // Delete a category
 router.delete('/api/categories/:id', async (req, res) => {
     let categories = await GetCategories()
-    categories = categories.filter(t => t.id !== req.params.id)
+    categories = categories.filter(t => t._id !== req.params._id)
     WriteData(categories)
     res.json({ message: 'Category deleted successfully' })
 
     let transactions = await GetTransactions()
-    transactions = transactions.filter(t => t.category.id !== req.params.id)
+    transactions = transactions.filter(t => t.category._id !== req.params._id)
     WriteTransactions(transactions)
 }
 )
