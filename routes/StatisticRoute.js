@@ -25,7 +25,7 @@ router.get('/api/totalSum/:date', async (req, res) => {
 
 router.get('/api/statistic', async (req, res) => {
     const { from, to, view, type } = req.query;
-    let transactions = await GetTransactions().find().toArray()
+    let transactions = await GetTransactions()
 
     if (view == "daily") {
         function ReturnDays(from, to) {

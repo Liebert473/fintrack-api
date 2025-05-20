@@ -24,13 +24,13 @@ function WriteData(transactions) {
 
 // Get all transactions (no filter)
 router.get('/api/transactions', async (req, res) => {
-  const transactions = await GetTransactions().find().toArray();
+  const transactions = await GetTransactions();
   res.json(transactions);
 });
 
 // Get data by endDate and days
 async function GetDataByDateRange(endDate, days, type) {
-  const data = await GetTransactions().find().toArray();
+  const data = await GetTransactions();
   const results = [];
   const dates = new Set();
   let startIndex = data.findIndex(t => t.date === endDate);
@@ -60,7 +60,7 @@ async function GetDataByDateRange(endDate, days, type) {
 
 router.get("/api/transactions/filter", async (req, res) => {
   const { endDate, days, type, minAmount, maxAmount, fromDate, toDate, account, category } = req.query;
-  let transactions = await GetTransactions().find().toArray();
+  let transactions = await GetTransactions();
 
   if (endDate || days) {
     if (!endDate || !days) {
@@ -128,7 +128,7 @@ router.get('/api/transactions/:id', async (req, res) => {
 
 // Create a new transaction
 router.post('/api/transactions', async (req, res) => {
-  const transactions = await GetTransactions().find().toArray()
+  const transactions = await GetTransactions()
   const newdata = req.body
   transactions.push(newdata)
   WriteData(transactions)
@@ -137,7 +137,7 @@ router.post('/api/transactions', async (req, res) => {
 
 // Update a transaction
 router.put('/api/transactions/:id', async (req, res) => {
-  let transactions = await GetTransactions().find().toArray()
+  let transactions = await GetTransactions()
   const index = transactions.findIndex(t => t._id === req.params._id)
   if (index === -1) {
     return res.status(404).json({ message: 'Transaction not found' })
@@ -149,7 +149,7 @@ router.put('/api/transactions/:id', async (req, res) => {
 
 // Delete a transaction
 router.delete('/api/transactions/:id', async (req, res) => {
-  let transactions = await GetTransactions().find().toArray()
+  let transactions = await GetTransactions()
   transactions = transactions.filter(t => t._id !== req.params._id)
   WriteData(transactions)
   res.json({ message: 'Transaction deleted successfully' })

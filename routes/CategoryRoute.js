@@ -80,7 +80,7 @@ router.put('/api/categories/:id', async (req, res) => {
 
     //Update related transactions
     const updatedCategory = categories[index];
-    let transactions = await GetTransactions().find().toArray();
+    let transactions = await GetTransactions();
 
     transactions = transactions.map(tx => {
         if (tx.category?._id === updatedCategory._id) {
@@ -111,7 +111,7 @@ router.delete('/api/categories/:id', async (req, res) => {
     WriteData(categories)
     res.json({ message: 'Category deleted successfully' })
 
-    let transactions = await GetTransactions().find().toArray()
+    let transactions = await GetTransactions()
     transactions = transactions.filter(t => t.category._id !== req.params._id)
     WriteTransactions(transactions)
 }

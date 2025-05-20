@@ -58,7 +58,7 @@ function getAccountData(account, allTransactions) {
 // Get all accounts (no filter)
 router.get('/api/accounts', async (req, res) => {
     const accounts = await GetAccounts();
-    const transactions = await GetTransactions().find().toArray(); // fetch once
+    const transactions = await GetTransactions(); // fetch once
 
     res.json(
         accounts.map(account => ({
@@ -97,7 +97,7 @@ router.delete('/api/accounts/:id', async (req, res) => {
     WriteData(accounts)
     res.json({ message: 'Account deleted successfully' })
 
-    let transactions = await GetTransactions().find().toArray()
+    let transactions = await GetTransactions()
     transactions = transactions.filter(t => t.account !== req.params._id)
     WriteTransactions(transactions)
 }
