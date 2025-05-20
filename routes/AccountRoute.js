@@ -3,35 +3,15 @@ const router = express.Router()
 import { GetTransactions } from './TransactionRoute.js';
 import connectDB from '../db.js';
 
-function WriteTransactions(transactions) {
-    try {
-        transactions = transactions.sort((a, b) => new Date(b.date) - new Date(a.date))
-        const data = JSON.stringify(transactions, null, 2);
-        fs.writeFileSync(transaction_file_path, data);
-        console.log("Transactions file updated successfully.");
-    } catch (err) {
-        console.error("Error writing transactions file:", err);
-    }
+// Utility: connect and return 'accounts' collection
+async function getAccountCollection() {
+    const db = await connectDB();
+    return db.collection("accounts");
 }
 
-async function GetAccounts(filterObj = {}) {
-    const db = await connectDB()
-    const accounts = await db.collection('accounts').find(filterObj).toArray()
-    return accounts
-}
-
-function WriteData(accounts) {
-    try {
-        const data = JSON.stringify(accounts, null, 2);
-        fs.writeFileSync(file_path, data);
-        console.log("Accounts file updated successfully.");
-    } catch (err) {
-        console.error("Error writing accounts file:", err);
-    }
-}
-
-function getAccountData(account, allTransactions) {
-    const accountTransactions = allTransactions.filter(tx => tx.account === account._id);
+// Utility: compute balance data per account
+function computeAccountData(account, transactions) {
+    const accountTransactions = transactions.filter(tx => tx.account === account._id.toString());
 
     const incomes = Number(
         accountTransactions
@@ -52,53 +32,69 @@ function getAccountData(account, allTransactions) {
     return { incomes, expenses, totalBalance };
 }
 
-// Get all accounts (no filter)
-router.get('/api/accounts', async (req, res) => {
-    const accounts = await GetAccounts();
-    const transactions = await GetTransactions(); // fetch once
+// GET: All accounts with balances
+router.get("/api/accounts", async (req, res) => {
+    const collection = await getAccountCollection();
+    const accounts = await collection.find().toArray();
+    const transactions = await GetTransactions();
 
-    res.json(
-        accounts.map(account => ({
-            ...account,
-            ...getAccountData(account, transactions),
-        }))
-    );
+    const result = accounts.map(account => ({
+        ...account,
+        ...computeAccountData(account, transactions),
+    }));
+
+    res.json(result);
 });
 
+// POST: Create a new account
+router.post("/api/accounts", async (req, res) => {
+    const collection = await getAccountCollection();
+    const result = await collection.insertOne(req.body);
 
-// Create a new account
-router.post('/api/accounts', async (req, res) => {
-    const accounts = await GetAccounts()
-    const newdata = req.body
-    accounts.push(newdata)
-    WriteData(accounts)
-    res.json({ message: 'Account created successfully', account: newdata })
-})
+    res.json({
+        message: "Account created successfully",
+        account: { ...req.body, _id: result.insertedId },
+    });
+});
 
-// Update a account
-router.put('/api/accounts/:id', async (req, res) => {
-    let accounts = await GetAccounts()
-    const index = accounts.findIndex(t => t._id === req.params._id)
-    if (index === -1) {
-        return res.status(404).json({ message: 'account not found' })
+// PUT: Update an account
+router.put("/api/accounts/:id", async (req, res) => {
+    const collection = await getAccountCollection();
+    const id = req.params.id;
+
+    const updateResult = await collection.findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: req.body },
+        { returnDocument: "after" }
+    );
+
+    if (!updateResult.value) {
+        return res.status(404).json({ message: "Account not found" });
     }
-    accounts[index] = { ...accounts[index], ...req.body }
-    WriteData(accounts)
-    res.json({ message: 'Account updated successfully', account: accounts[index] })
-})
 
-// Delete a account
-router.delete('/api/accounts/:id', async (req, res) => {
-    let accounts = await GetAccounts()
-    accounts = accounts.filter(t => t._id !== req.params._id)
-    WriteData(accounts)
-    res.json({ message: 'Account deleted successfully' })
+    res.json({
+        message: "Account updated successfully",
+        account: updateResult.value,
+    });
+});
 
-    let transactions = await GetTransactions()
-    transactions = transactions.filter(t => t.account !== req.params._id)
-    WriteTransactions(transactions)
-}
-)
+// DELETE: Delete an account and its transactions
+router.delete("/api/accounts/:id", async (req, res) => {
+    const id = req.params.id;
+    const collection = await getAccountCollection();
+
+    const deleteResult = await collection.deleteOne({ _id: new ObjectId(id) });
+
+    if (deleteResult.deletedCount === 0) {
+        return res.status(404).json({ message: "Account not found" });
+    }
+
+    // Remove related transactions
+    const db = await connectDB();
+    await db.collection("transactions").deleteMany({ account: id });
+
+    res.json({ message: "Account and related transactions deleted successfully" });
+});
 
 export default router
-export { GetAccounts }
+export { getAccountCollection }
