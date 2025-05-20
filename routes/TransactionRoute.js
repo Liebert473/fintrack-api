@@ -21,17 +21,6 @@ async function GetTransactions(filterObj = {}) {
   return transactions;
 }
 
-function WriteData(transactions) {
-  try {
-    transactions = transactions.sort((a, b) => new Date(b.date) - new Date(a.date))
-    const data = JSON.stringify(transactions, null, 2);
-    fs.writeFileSync(file_path, data);
-    console.log("Transactions file updated successfully.");
-  } catch (err) {
-    console.error("Error writing transactions file:", err);
-  }
-}
-
 // Get all transactions (no filter)
 router.get('/api/transactions', async (req, res) => {
   const transactions = await GetTransactions();
