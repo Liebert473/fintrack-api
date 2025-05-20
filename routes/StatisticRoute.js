@@ -2,27 +2,16 @@ import express from 'express';
 import dayjs from 'dayjs';
 const router = express.Router()
 import fs from "fs";
-const transaction_file_path = "./data/transactions.json"
+import { GetTransactions } from './TransactionRoute';
 
-function GetTransactions() {
-    try {
-        const data = fs.readFileSync(transaction_file_path, "utf8");
-        const transactions = JSON.parse(data);
-        return transactions;
-    } catch (err) {
-        console.error("Error reading transactions file:", err);
-        return [];
-    }
-}
-
-router.get('/api/totalSum/:date', (req, res) => {
+router.get('/api/totalSum/:date', async (req, res) => {
     const { account, type } = req.query;
     const date = req.params.date;
 
     const start = dayjs(date).startOf('month').format('YYYY-MM-DD');
     const end = dayjs(date).endOf('month').format('YYYY-MM-DD');
 
-    let transactions = GetTransactions();
+    let transactions = await GetTransactions();
 
     const sum = transactions
         .filter(x =>
@@ -37,9 +26,9 @@ router.get('/api/totalSum/:date', (req, res) => {
 });
 
 
-router.get('/api/statistic', (req, res) => {
+router.get('/api/statistic', async (req, res) => {
     const { from, to, view, type } = req.query;
-    let transactions = GetTransactions()
+    let transactions = await GetTransactions()
 
     if (view == "daily") {
         function ReturnDays(from, to) {

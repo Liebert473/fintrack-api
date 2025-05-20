@@ -3,17 +3,8 @@ const router = express.Router()
 import fs from "fs";
 const file_path = "./data/categories.json"
 const transaction_file_path = "./data/transactions.json"
-
-function GetTransactions() {
-    try {
-        const data = fs.readFileSync(transaction_file_path, "utf8");
-        const transactions = JSON.parse(data);
-        return transactions;
-    } catch (err) {
-        console.error("Error reading transactions file:", err);
-        return [];
-    }
-}
+import { GetTransactions } from './TransactionRoute';
+import connectDB from '../db.js';
 
 function WriteTransactions(transactions) {
     try {
@@ -26,15 +17,10 @@ function WriteTransactions(transactions) {
     }
 }
 
-function GetData() {
-    try {
-        const data = fs.readFileSync(file_path, "utf8");
-        const categories = JSON.parse(data);
-        return categories;
-    } catch (err) {
-        console.error("Error reading categories file:", err);
-        return [];
-    }
+async function GetCategories() {
+    const db = await connectDB()
+    const categories = await db.collection('categories').find().toArray()
+    return categories
 }
 
 function WriteData(categories) {
@@ -48,9 +34,9 @@ function WriteData(categories) {
 }
 
 // Get all categories (no filter)
-router.get('/api/categories', (req, res) => {
+router.get('/api/categories', async (req, res) => {
     const { search } = req.query;
-    let categories = GetData();
+    let categories = await GetCategories();
 
     if (search) {
         categories = categories.filter(x =>
@@ -63,16 +49,16 @@ router.get('/api/categories', (req, res) => {
 
 
 //Get category by id
-router.get('/api/categories/:id', (req, res) => {
-    const categories = GetData();
+router.get('/api/categories/:id', async (req, res) => {
+    const categories = await GetCategories();
     const id = req.params.id
     res.json(categories.find(x => x.id == id))
 });
 
 
 // Create a new category
-router.post('/api/categories', (req, res) => {
-    const categories = GetData()
+router.post('/api/categories', async (req, res) => {
+    const categories = await GetCategories()
     const newdata = req.body
     categories.push(newdata)
     WriteData(categories)
@@ -80,8 +66,8 @@ router.post('/api/categories', (req, res) => {
 })
 
 // Update a category
-router.put('/api/categories/:id', (req, res) => {
-    let categories = GetData();
+router.put('/api/categories/:id', async (req, res) => {
+    let categories = await GetCategories();
     const index = categories.findIndex(t => t.id === req.params.id);
 
     if (index === -1) {
@@ -94,7 +80,7 @@ router.put('/api/categories/:id', (req, res) => {
 
     //Update related transactions
     const updatedCategory = categories[index];
-    let transactions = GetTransactions();
+    let transactions = await GetTransactions();
 
     transactions = transactions.map(tx => {
         if (tx.category?.id === updatedCategory.id) {
@@ -119,16 +105,17 @@ router.put('/api/categories/:id', (req, res) => {
 
 
 // Delete a category
-router.delete('/api/categories/:id', (req, res) => {
-    let categories = GetData()
+router.delete('/api/categories/:id', async (req, res) => {
+    let categories = await GetCategories()
     categories = categories.filter(t => t.id !== req.params.id)
     WriteData(categories)
     res.json({ message: 'Category deleted successfully' })
 
-    let transactions = GetTransactions()
+    let transactions = await GetTransactions()
     transactions = transactions.filter(t => t.category.id !== req.params.id)
     WriteTransactions(transactions)
 }
 )
 
 export default router
+export { GetCategories }

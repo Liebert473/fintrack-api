@@ -3,17 +3,7 @@ const router = express.Router()
 import fs from "fs";
 const file_path = "./data/accounts.json"
 const transaction_file_path = "./data/transactions.json"
-
-function GetTransactions() {
-    try {
-        const data = fs.readFileSync(transaction_file_path, "utf8");
-        const transactions = JSON.parse(data);
-        return transactions;
-    } catch (err) {
-        console.error("Error reading transactions file:", err);
-        return [];
-    }
-}
+import { GetTransactions } from './TransactionRoute';
 
 function WriteTransactions(transactions) {
     try {
@@ -26,7 +16,7 @@ function WriteTransactions(transactions) {
     }
 }
 
-function GetData() {
+function GetAccounts() {
     try {
         const data = fs.readFileSync(file_path, "utf8");
         const accounts = JSON.parse(data);
@@ -70,9 +60,9 @@ function getAccountData(account, allTransactions) {
 }
 
 // Get all accounts (no filter)
-router.get('/api/accounts', (req, res) => {
-    const accounts = GetData();
-    const transactions = GetTransactions(); // fetch once
+router.get('/api/accounts', async (req, res) => {
+    const accounts = await GetAccounts();
+    const transactions = await GetTransactions(); // fetch once
 
     res.json(
         accounts.map(account => ({
@@ -84,8 +74,8 @@ router.get('/api/accounts', (req, res) => {
 
 
 // Create a new account
-router.post('/api/accounts', (req, res) => {
-    const accounts = GetData()
+router.post('/api/accounts', async (req, res) => {
+    const accounts = await GetAccounts()
     const newdata = req.body
     accounts.push(newdata)
     WriteData(accounts)
@@ -93,8 +83,8 @@ router.post('/api/accounts', (req, res) => {
 })
 
 // Update a account
-router.put('/api/accounts/:id', (req, res) => {
-    let accounts = GetData()
+router.put('/api/accounts/:id', async (req, res) => {
+    let accounts = await GetAccounts()
     const index = accounts.findIndex(t => t.id === req.params.id)
     if (index === -1) {
         return res.status(404).json({ message: 'account not found' })
@@ -105,16 +95,17 @@ router.put('/api/accounts/:id', (req, res) => {
 })
 
 // Delete a account
-router.delete('/api/accounts/:id', (req, res) => {
-    let accounts = GetData()
+router.delete('/api/accounts/:id', async (req, res) => {
+    let accounts = await GetAccounts()
     accounts = accounts.filter(t => t.id !== req.params.id)
     WriteData(accounts)
     res.json({ message: 'Account deleted successfully' })
 
-    let transactions = GetTransactions()
+    let transactions = await GetTransactions()
     transactions = transactions.filter(t => t.account !== req.params.id)
     WriteTransactions(transactions)
 }
 )
 
 export default router
+export { GetAccounts }
