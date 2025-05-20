@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router()
 import connectDB from '../db.js';
+import { ObjectId } from 'mongodb';
 
 // Utility: Connect and return 'categories' collection
 async function getCategoryCollection() {
@@ -87,7 +88,7 @@ router.delete("/api/categories/:id", async (req, res) => {
 
     // Remove all transactions with this category
     const db = await connectDB();
-    await db.collection("transactions").deleteMany({ "category._id": id });
+    await db.collection("transactions").deleteMany({ "category._id": new ObjectId(id) });
 
     res.json({ message: "Category and related transactions deleted successfully" });
 });

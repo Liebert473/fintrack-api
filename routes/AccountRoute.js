@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router()
 import { GetTransactions } from './TransactionRoute.js';
 import connectDB from '../db.js';
+import { ObjectId } from 'mongodb';
 
 // Utility: connect and return 'accounts' collection
 async function getAccountCollection() {
@@ -95,7 +96,7 @@ router.delete("/api/accounts/:id", async (req, res) => {
 
     // Remove related transactions
     const db = await connectDB();
-    await db.collection("transactions").deleteMany({ account: id });
+    await db.collection("transactions").deleteMany({ account: new ObjectId(id) });
 
     res.json({ message: "Account and related transactions deleted successfully" });
 });
