@@ -10,8 +10,8 @@ async function getAccountCollection() {
 }
 
 // Utility: compute balance data per account
-function computeAccountData(account, transactions) {
-    const accountTransactions = transactions.filter(tx => tx.account === account._id.toString());
+async function computeAccountData(account) {
+    const accountTransactions = await GetTransactions({ account: account._id })
 
     const incomes = Number(
         accountTransactions
@@ -36,12 +36,16 @@ function computeAccountData(account, transactions) {
 router.get("/api/accounts", async (req, res) => {
     const collection = await getAccountCollection();
     const accounts = await collection.find().toArray();
-    const transactions = await GetTransactions();
 
-    const result = accounts.map(account => ({
-        ...account,
-        ...computeAccountData(account, transactions),
-    }));
+    const result = await Promise.all(
+        accounts.map(async account => {
+            const accountData = await computeAccountData(account);
+            return {
+                ...account,
+                ...accountData,
+            };
+        })
+    );
 
     res.json(result);
 });
