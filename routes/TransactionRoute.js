@@ -5,7 +5,7 @@ const file_path = "./data/transactions.json"
 import connectDB from '../db.js';
 import { ObjectId } from 'mongodb';
 
-async function GetTransactions(filterObj = null) {
+async function GetTransactions(filterObj = {}) {
   const db = await connectDB()
   const transactions = await db.collection('transactions').find(filterObj).toArray()
   return transactions

@@ -17,7 +17,7 @@ function WriteTransactions(transactions) {
     }
 }
 
-async function GetAccounts(filterObj) {
+async function GetAccounts(filterObj = {}) {
     const db = await connectDB()
     const accounts = await db.collection('accounts').find(filterObj).toArray()
     return accounts
