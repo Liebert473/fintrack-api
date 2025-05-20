@@ -1,7 +1,5 @@
 import express from 'express';
 const router = express.Router()
-import fs from "fs";
-import { GetTransactions } from './TransactionRoute.js';
 import connectDB from '../db.js';
 
 // Utility: Connect and return 'categories' collection
@@ -95,4 +93,4 @@ router.delete("/api/categories/:id", async (req, res) => {
 });
 
 export default router
-export { GetCategories }
+export { getCategoryCollection }
