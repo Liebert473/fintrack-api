@@ -14,7 +14,8 @@ router.get('/api/totalSum/:date', async (req, res) => {
     let transactions = await GetTransactions({
         account: new ObjectId(account),
         type: type,
-        date: { $gte: start, $lte: end }
+        fromDate: start,
+        toDate: end
     })
 
     const sum = transactions.reduce((x, y) => x + y.amount, 0);
