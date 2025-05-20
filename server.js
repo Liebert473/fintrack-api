@@ -5,6 +5,9 @@ import TransactionRoute from './routes/TransactionRoute.js';
 import AccountRoute from './routes/AccountRoute.js';
 import CategoryRoute from './routes/CategoryRoute.js';
 import StatisticRoute from './routes/StatisticRoute.js'
+import connectDB from './db.js';
+
+await connectDB()
 
 const PORT = 5500
 
