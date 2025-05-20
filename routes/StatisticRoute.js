@@ -2,7 +2,7 @@ import express from 'express';
 import dayjs from 'dayjs';
 const router = express.Router()
 import fs from "fs";
-import { GetTransactions } from './TransactionRoute';
+import { GetTransactions } from './TransactionRoute.js';
 
 router.get('/api/totalSum/:date', async (req, res) => {
     const { account, type } = req.query;

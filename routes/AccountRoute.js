@@ -3,7 +3,7 @@ const router = express.Router()
 import fs from "fs";
 const file_path = "./data/accounts.json"
 const transaction_file_path = "./data/transactions.json"
-import { GetTransactions } from './TransactionRoute';
+import { GetTransactions } from './TransactionRoute.js';
 
 function WriteTransactions(transactions) {
     try {
