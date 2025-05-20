@@ -4,6 +4,7 @@ import fs from "fs";
 const file_path = "./data/accounts.json"
 const transaction_file_path = "./data/transactions.json"
 import { GetTransactions } from './TransactionRoute.js';
+import connectDB from '../db.js';
 
 function WriteTransactions(transactions) {
     try {
@@ -16,15 +17,10 @@ function WriteTransactions(transactions) {
     }
 }
 
-function GetAccounts() {
-    try {
-        const data = fs.readFileSync(file_path, "utf8");
-        const accounts = JSON.parse(data);
-        return accounts;
-    } catch (err) {
-        console.error("Error reading accounts file:", err);
-        return [];
-    }
+async function GetAccounts() {
+    const db = await connectDB()
+    const accounts = await db.collection('accounts').find().toArray()
+    return accounts
 }
 
 function WriteData(accounts) {
