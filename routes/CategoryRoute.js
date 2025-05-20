@@ -1,8 +1,6 @@
 import express from 'express';
 const router = express.Router()
 import fs from "fs";
-const file_path = "./data/categories.json"
-const transaction_file_path = "./data/transactions.json"
 import { GetTransactions } from './TransactionRoute.js';
 import connectDB from '../db.js';
 

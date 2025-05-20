@@ -1,14 +1,24 @@
 import express from 'express';
 const router = express.Router()
-import fs from "fs";
-const file_path = "./data/transactions.json"
 import connectDB from '../db.js';
 import { ObjectId } from 'mongodb';
 
 async function GetTransactions(filterObj = {}) {
-  const db = await connectDB()
-  const transactions = await db.collection('transactions').find(filterObj).toArray()
-  return transactions
+  const db = await connectDB();
+  const query = {};
+
+  // Build dynamic MongoDB query from filterObj
+  if (filterObj.minAmount) query.amount = { ...query.amount, $gte: Number(filterObj.minAmount) };
+  if (filterObj.maxAmount) query.amount = { ...query.amount, $lte: Number(filterObj.maxAmount) };
+  if (filterObj.type) query.type = filterObj.type;
+  if (filterObj.account) query.account = filterObj.account;
+  if (filterObj.category) query["category._id"] = filterObj.category;
+  if (filterObj.fromDate) query.date = { ...query.date, $gte: filterObj.fromDate };
+  if (filterObj.toDate) query.date = { ...query.date, $lte: filterObj.toDate };
+  if (filterObj._id) query._id = new ObjectId(filterObj._id)
+
+  const transactions = await db.collection("transactions").find(query).sort({ date: -1 }).toArray();
+  return transactions;
 }
 
 function WriteData(transactions) {
@@ -29,92 +39,59 @@ router.get('/api/transactions', async (req, res) => {
 });
 
 // Get data by endDate and days
-async function GetDataByDateRange(endDate, days, type) {
-  const data = await GetTransactions();
+async function GetStackedTransactions(endDate, days, type) {
+  const db = await connectDB();
+
+  const matchQuery = {};
+  if (type) matchQuery.type = type;
+  if (endDate) matchQuery.date = { $lte: endDate };
+
+  const allDataLength = await db.collection("transactions").countDocuments(type ? { type } : {});
+
+  const cursor = db.collection("transactions")
+    .find(matchQuery)
+    .sort({ date: -1 });
+
   const results = [];
-  const dates = new Set();
-  let startIndex = data.findIndex(t => t.date === endDate);
+  const uniqueDates = new Set();
 
-  if (startIndex === -1) {
-    startIndex = data.findIndex(t => t.date < endDate);
-    if (startIndex === -1) {
-      return { results: [], dates: [] };
-    }
-  }
-
-  for (let i = startIndex; i < data.length; i++) {
-    const item = data[i]
-    if (type && item.type != type) continue
-    if (!dates.has(item.date)) {
-      if (dates.size >= days) {
-        break;
-      } else {
-        dates.add(item.date);
-      }
+  while (await cursor.hasNext()) {
+    const item = await cursor.next();
+    if (!uniqueDates.has(item.date)) {
+      if (uniqueDates.size >= days) break;
+      uniqueDates.add(item.date);
     }
     results.push(item);
   }
 
-  return { results, dates: Array.from(dates) };
+  return {
+    transactions: results,
+    uniqueDates: Array.from(uniqueDates),
+    totalDataLength: allDataLength,
+  };
 }
 
 router.get("/api/transactions/filter", async (req, res) => {
   const { endDate, days, type, minAmount, maxAmount, fromDate, toDate, account, category } = req.query;
-  let transactions = await GetTransactions();
 
-  if (endDate || days) {
-    if (!endDate || !days) {
-      return res.status(400).json({ message: "Missing endDate or days" });
-    }
-
-    const { results, dates } = await GetDataByDateRange(endDate, parseInt(days), type);
-    const allDataLength = type ? transactions.filter(x => x.type === type).length : transactions.length;
-
-    return res.json({
-      transactions: results,
-      uniqueDates: dates,
-      totalDataLength: allDataLength,
-    });
+  if (endDate && days) {
+    const { transactions, uniqueDates, totalDataLength } = await GetStackedTransactions(endDate, parseInt(days), type);
+    return res.json({ transactions, uniqueDates, totalDataLength });
   }
 
-  // Filter fallback if no endDate/days logic
+  // fallback filtering
+  const transactions = await GetTransactions({
+    minAmount, maxAmount, type, fromDate, toDate, account, category,
+  });
 
-  let uniqueDates = new Set();
-
-  if (minAmount) {
-    transactions = transactions.filter(x => x.amount >= Number(minAmount));
-  }
-  if (maxAmount) {
-    transactions = transactions.filter(x => x.amount <= Number(maxAmount))
-  }
-  if (type) {
-    transactions = transactions.filter(x => x.type == type)
-  }
-  if (account) {
-    transactions = transactions.filter(x => x.account == account)
-  }
-  if (category) {
-    transactions = transactions.filter(x => x.category._id == category)
-  }
-  if (fromDate) {
-    transactions = transactions.filter(x => x.date >= fromDate)
-  }
-  if (toDate) {
-    transactions = transactions.filter(x => x.date <= toDate)
-  }
-
-  for (const t of transactions) {
-    uniqueDates.add(t.date);
-  }
+  const uniqueDates = [...new Set(transactions.map(t => t.date))];
 
   return res.json({
     transactions,
-    uniqueDates: Array.from(uniqueDates),
+    uniqueDates,
     totalDataLength: transactions.length,
   });
 });
-
-
 
 // Get a transaction by ID
 router.get('/api/transactions/:id', async (req, res) => {
@@ -128,33 +105,53 @@ router.get('/api/transactions/:id', async (req, res) => {
 
 // Create a new transaction
 router.post('/api/transactions', async (req, res) => {
-  const transactions = await GetTransactions()
-  const newdata = req.body
-  transactions.push(newdata)
-  WriteData(transactions)
-  res.json({ message: 'Transaction created successfully', transaction: newdata })
-})
+  const db = await connectDB();
+  const newTransaction = req.body;
+
+  const result = await db.collection('transactions').insertOne(newTransaction);
+
+  res.status(201).json({
+    message: 'Transaction created successfully',
+    transaction: { ...newTransaction, _id: result.insertedId }
+  });
+});
+
 
 // Update a transaction
 router.put('/api/transactions/:id', async (req, res) => {
-  let transactions = await GetTransactions()
-  const index = transactions.findIndex(t => t._id === req.params._id)
-  if (index === -1) {
-    return res.status(404).json({ message: 'Transaction not found' })
+  const db = await connectDB();
+  const { id } = req.params;
+
+  const result = await db.collection('transactions').findOneAndUpdate(
+    { _id: new ObjectId(id) },
+    { $set: req.body },
+    { returnDocument: 'after' } // Return updated doc
+  );
+
+  if (!result.value) {
+    return res.status(404).json({ message: 'Transaction not found' });
   }
-  transactions[index] = { ...transactions[index], ...req.body }
-  WriteData(transactions)
-  res.json({ message: 'Transaction updated successfully', transaction: transactions[index] })
-})
+
+  res.json({
+    message: 'Transaction updated successfully',
+    transaction: result.value
+  });
+});
 
 // Delete a transaction
 router.delete('/api/transactions/:id', async (req, res) => {
-  let transactions = await GetTransactions()
-  transactions = transactions.filter(t => t._id !== req.params._id)
-  WriteData(transactions)
-  res.json({ message: 'Transaction deleted successfully' })
-}
-)
+  const db = await connectDB();
+  const { id } = req.params;
+
+  const result = await db.collection('transactions').deleteOne({ _id: new ObjectId(id) });
+
+  if (result.deletedCount === 0) {
+    return res.status(404).json({ message: 'Transaction not found' });
+  }
+
+  res.json({ message: 'Transaction deleted successfully' });
+});
+
 
 export default router
 export { GetTransactions }
