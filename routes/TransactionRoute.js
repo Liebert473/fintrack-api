@@ -11,8 +11,8 @@ async function GetTransactions(filterObj = {}) {
   if (filterObj.minAmount) query.amount = { ...query.amount, $gte: Number(filterObj.minAmount) };
   if (filterObj.maxAmount) query.amount = { ...query.amount, $lte: Number(filterObj.maxAmount) };
   if (filterObj.type) query.type = filterObj.type;
-  if (filterObj.account) query.account = filterObj.account;
-  if (filterObj.category) query["category._id"] = filterObj.category;
+  if (filterObj.account) query.account = new ObjectId(filterObj.account);
+  if (filterObj.category) query["category._id"] = new ObjectId(filterObj.category);
   if (filterObj.fromDate) query.date = { ...query.date, $gte: filterObj.fromDate };
   if (filterObj.toDate) query.date = { ...query.date, $lte: filterObj.toDate };
   if (filterObj._id) query._id = new ObjectId(filterObj._id)
@@ -96,6 +96,8 @@ router.get('/api/transactions/:id', async (req, res) => {
 router.post('/api/transactions', async (req, res) => {
   const db = await connectDB();
   const newTransaction = req.body;
+  newTransaction.account = new ObjectId(newTransaction.account);
+  newTransaction.category._id = new ObjectId(newTransaction.category._id);
 
   const result = await db.collection('transactions').insertOne(newTransaction);
 
