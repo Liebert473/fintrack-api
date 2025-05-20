@@ -1,8 +1,8 @@
 import express from 'express';
 import dayjs from 'dayjs';
 const router = express.Router()
-import fs from "fs";
 import { GetTransactions } from './TransactionRoute.js';
+import { ObjectId } from 'mongodb';
 
 router.get('/api/totalSum/:date', async (req, res) => {
     const { account, type } = req.query;
@@ -11,16 +11,13 @@ router.get('/api/totalSum/:date', async (req, res) => {
     const start = dayjs(date).startOf('month').format('YYYY-MM-DD');
     const end = dayjs(date).endOf('month').format('YYYY-MM-DD');
 
-    let transactions = await GetTransactions();
+    let transactions = await GetTransactions({
+        account: new ObjectId(account),
+        type: type,
+        date: { $gte: start, $lte: end }
+    })
 
-    const sum = transactions
-        .filter(x =>
-            x.account === account &&
-            x.date >= start &&
-            x.date <= end &&
-            x.type === type
-        )
-        .reduce((x, y) => x + y.amount, 0);
+    const sum = transactions.reduce((x, y) => x + y.amount, 0);
 
     res.json(sum);
 });
@@ -28,7 +25,7 @@ router.get('/api/totalSum/:date', async (req, res) => {
 
 router.get('/api/statistic', async (req, res) => {
     const { from, to, view, type } = req.query;
-    let transactions = await GetTransactions()
+    let transactions = await GetTransactions().find().toArray()
 
     if (view == "daily") {
         function ReturnDays(from, to) {

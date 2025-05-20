@@ -17,9 +17,9 @@ function WriteTransactions(transactions) {
     }
 }
 
-async function GetCategories() {
+async function GetCategories(filterObj = null) {
     const db = await connectDB()
-    const categories = await db.collection('categories').find().toArray()
+    const categories = await db.collection('categories').find(filterObj).toArray()
     return categories
 }
 
@@ -80,7 +80,7 @@ router.put('/api/categories/:id', async (req, res) => {
 
     //Update related transactions
     const updatedCategory = categories[index];
-    let transactions = await GetTransactions();
+    let transactions = await GetTransactions().find().toArray();
 
     transactions = transactions.map(tx => {
         if (tx.category?._id === updatedCategory._id) {
@@ -111,7 +111,7 @@ router.delete('/api/categories/:id', async (req, res) => {
     WriteData(categories)
     res.json({ message: 'Category deleted successfully' })
 
-    let transactions = await GetTransactions()
+    let transactions = await GetTransactions().find().toArray()
     transactions = transactions.filter(t => t.category._id !== req.params._id)
     WriteTransactions(transactions)
 }

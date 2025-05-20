@@ -3,10 +3,11 @@ const router = express.Router()
 import fs from "fs";
 const file_path = "./data/transactions.json"
 import connectDB from '../db.js';
+import { ObjectId } from 'mongodb';
 
-async function GetTransactions() {
+async function GetTransactions(filterObj = null) {
   const db = await connectDB()
-  const transactions = await db.collection('transactions').find().toArray()
+  const transactions = await db.collection('transactions').find(filterObj).toArray()
   return transactions
 }
 
@@ -23,13 +24,13 @@ function WriteData(transactions) {
 
 // Get all transactions (no filter)
 router.get('/api/transactions', async (req, res) => {
-  const transactions = await GetTransactions();
+  const transactions = await GetTransactions().find().toArray();
   res.json(transactions);
 });
 
 // Get data by endDate and days
 async function GetDataByDateRange(endDate, days, type) {
-  const data = await GetTransactions();
+  const data = await GetTransactions().find().toArray();
   const results = [];
   const dates = new Set();
   let startIndex = data.findIndex(t => t.date === endDate);
@@ -59,7 +60,7 @@ async function GetDataByDateRange(endDate, days, type) {
 
 router.get("/api/transactions/filter", async (req, res) => {
   const { endDate, days, type, minAmount, maxAmount, fromDate, toDate, account, category } = req.query;
-  let transactions = await GetTransactions();
+  let transactions = await GetTransactions().find().toArray();
 
   if (endDate || days) {
     if (!endDate || !days) {
@@ -116,9 +117,8 @@ router.get("/api/transactions/filter", async (req, res) => {
 
 
 // Get a transaction by ID
-router.get('/api/tarnsactions/:id', async (req, res) => {
-  const transactions = await GetTransactions()
-  const transaction = transactions.find(t => t._id === req.params._id)
+router.get('/api/transactions/:id', async (req, res) => {
+  const transaction = await GetTransactions({ _id: new ObjectId(req.params.id) })
   if (!transaction) {
     return res.status(404).json({ message: 'Transaction not found' })
   }
@@ -128,7 +128,7 @@ router.get('/api/tarnsactions/:id', async (req, res) => {
 
 // Create a new transaction
 router.post('/api/transactions', async (req, res) => {
-  const transactions = await GetTransactions()
+  const transactions = await GetTransactions().find().toArray()
   const newdata = req.body
   transactions.push(newdata)
   WriteData(transactions)
@@ -137,7 +137,7 @@ router.post('/api/transactions', async (req, res) => {
 
 // Update a transaction
 router.put('/api/transactions/:id', async (req, res) => {
-  let transactions = await GetTransactions()
+  let transactions = await GetTransactions().find().toArray()
   const index = transactions.findIndex(t => t._id === req.params._id)
   if (index === -1) {
     return res.status(404).json({ message: 'Transaction not found' })
@@ -149,7 +149,7 @@ router.put('/api/transactions/:id', async (req, res) => {
 
 // Delete a transaction
 router.delete('/api/transactions/:id', async (req, res) => {
-  let transactions = await GetTransactions()
+  let transactions = await GetTransactions().find().toArray()
   transactions = transactions.filter(t => t._id !== req.params._id)
   WriteData(transactions)
   res.json({ message: 'Transaction deleted successfully' })

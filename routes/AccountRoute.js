@@ -17,9 +17,9 @@ function WriteTransactions(transactions) {
     }
 }
 
-async function GetAccounts() {
+async function GetAccounts(filterObj) {
     const db = await connectDB()
-    const accounts = await db.collection('accounts').find().toArray()
+    const accounts = await db.collection('accounts').find(filterObj).toArray()
     return accounts
 }
 
@@ -58,7 +58,7 @@ function getAccountData(account, allTransactions) {
 // Get all accounts (no filter)
 router.get('/api/accounts', async (req, res) => {
     const accounts = await GetAccounts();
-    const transactions = await GetTransactions(); // fetch once
+    const transactions = await GetTransactions().find().toArray(); // fetch once
 
     res.json(
         accounts.map(account => ({
@@ -97,7 +97,7 @@ router.delete('/api/accounts/:id', async (req, res) => {
     WriteData(accounts)
     res.json({ message: 'Account deleted successfully' })
 
-    let transactions = await GetTransactions()
+    let transactions = await GetTransactions().find().toArray()
     transactions = transactions.filter(t => t.account !== req.params._id)
     WriteTransactions(transactions)
 }
