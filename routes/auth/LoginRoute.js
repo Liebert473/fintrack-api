@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken'
 
 dotenv.config()
 
-router.post('/auth/login', async (req, res) => {
+router.post('api/auth/login', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
         return res.status(400).json({ error: 'Email or username and password are required.' });
