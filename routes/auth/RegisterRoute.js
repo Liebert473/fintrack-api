@@ -12,7 +12,7 @@ router.post('/api/auth/register', async (req, res) => {
     if (!email || !password || !name || !username) return res.status(400).json({ error: 'Some reqired information are missing.' })
 
     const db = await connectDB()
-    const user = await db.collection('users').findOne({ email })
+    const user = await db.collection('users').find({ email, username })
     console.log(user)
     if (user) return res.status(409).json({ error: 'User already exists.' })
 
