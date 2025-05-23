@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router()
 import connectDB from '../../db.js';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
