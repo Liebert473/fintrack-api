@@ -3,6 +3,7 @@ const router = express.Router()
 import connectDB from '../../db.js';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
