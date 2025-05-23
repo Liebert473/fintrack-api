@@ -13,9 +13,9 @@ router.post('/api/auth/register', async (req, res) => {
 
     const db = await connectDB()
     const user = await db.collection('users').find({ email, username }).toArray()
+    console.log(user)
 
     if (user.length > 0) return res.status(409).json({ error: 'User already exists.' })
-    console.log(user)
 
     const passwordHash = await bcrypt.hash(password, 10)
     const result = await db.collection('users').insertOne({
