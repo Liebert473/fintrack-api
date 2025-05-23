@@ -1,6 +1,9 @@
 import express from 'express';
 const router = express.Router()
 import connectDB from '../db.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 router.post('/api/auth/register', async (req, res) => {
     const { email, password, name, username } = req.body
