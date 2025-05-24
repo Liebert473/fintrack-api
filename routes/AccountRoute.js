@@ -3,6 +3,7 @@ const router = express.Router()
 import { GetTransactions } from './TransactionRoute.js';
 import connectDB from '../db.js';
 import { ObjectId } from 'mongodb';
+import authenticateToken from './auth/authMiddleware.js';
 
 // Utility: connect and return 'accounts' collection
 async function getAccountCollection() {
@@ -11,8 +12,8 @@ async function getAccountCollection() {
 }
 
 // Utility: compute balance data per account
-async function computeAccountData(account) {
-    const accountTransactions = await GetTransactions({ account: account._id })
+async function computeAccountData(account, user) {
+    const accountTransactions = await GetTransactions({ account: account._id, user })
 
     const incomes = Number(
         accountTransactions
@@ -34,13 +35,13 @@ async function computeAccountData(account) {
 }
 
 // GET: All accounts with balances
-router.get("/api/accounts", async (req, res) => {
+router.get("/api/accounts", authenticateToken, async (req, res) => {
     const collection = await getAccountCollection();
-    const accounts = await collection.find().toArray();
+    const accounts = await collection.find({ user: req.user.id }).toArray();
 
     const result = await Promise.all(
         accounts.map(async account => {
-            const accountData = await computeAccountData(account);
+            const accountData = await computeAccountData(account, new ObjectId(req.user.id));
             return {
                 ...account,
                 ...accountData,
@@ -52,7 +53,7 @@ router.get("/api/accounts", async (req, res) => {
 });
 
 // POST: Create a new account
-router.post("/api/accounts", async (req, res) => {
+router.post("/api/accounts", authenticateToken, async (req, res) => {
     const collection = await getAccountCollection();
     const result = await collection.insertOne(req.body);
 
@@ -63,7 +64,7 @@ router.post("/api/accounts", async (req, res) => {
 });
 
 // PUT: Update an account
-router.put("/api/accounts/:id", async (req, res) => {
+router.put("/api/accounts/:id", authenticateToken, async (req, res) => {
     const collection = await getAccountCollection();
     const id = req.params.id;
 
@@ -84,7 +85,7 @@ router.put("/api/accounts/:id", async (req, res) => {
 });
 
 // DELETE: Delete an account and its transactions
-router.delete("/api/accounts/:id", async (req, res) => {
+router.delete("/api/accounts/:id", authenticateToken, async (req, res) => {
     const id = req.params.id;
     const collection = await getAccountCollection();
 

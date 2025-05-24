@@ -7,6 +7,7 @@ import CategoryRoute from './routes/CategoryRoute.js';
 import StatisticRoute from './routes/StatisticRoute.js'
 
 import RegisterRoute from './routes/auth/RegisterRoute.js';
+import LoginRoute from './routes/auth/LoginRoute.js';
 import connectDB from './db.js';
 import dotenv from 'dotenv'
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use(RegisterRoute)
+app.use(LoginRoute)
 
 app.use(TransactionRoute)
 app.use(AccountRoute)

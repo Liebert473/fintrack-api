@@ -3,8 +3,9 @@ import dayjs from 'dayjs';
 const router = express.Router()
 import { GetTransactions } from './TransactionRoute.js';
 import { ObjectId } from 'mongodb';
+import authenticateToken from './auth/authMiddleware.js';
 
-router.get('/api/totalSum/:date', async (req, res) => {
+router.get('/api/totalSum/:date', authenticateToken, async (req, res) => {
     const { account, type } = req.query;
     const date = req.params.date;
 
@@ -15,7 +16,8 @@ router.get('/api/totalSum/:date', async (req, res) => {
         account: new ObjectId(account),
         type: type,
         fromDate: start,
-        toDate: end
+        toDate: end,
+        user: req.user.id
     })
 
     const sum = transactions.reduce((x, y) => x + y.amount, 0);
@@ -24,9 +26,9 @@ router.get('/api/totalSum/:date', async (req, res) => {
 });
 
 
-router.get('/api/statistic', async (req, res) => {
+router.get('/api/statistic', authenticateToken, async (req, res) => {
     const { from, to, view, type } = req.query;
-    let transactions = await GetTransactions()
+    let transactions = await GetTransactions({ user: req.user.id })
 
     if (view == "daily") {
         function ReturnDays(from, to) {

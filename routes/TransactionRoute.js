@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router()
 import connectDB from '../db.js';
 import { ObjectId } from 'mongodb';
+import authenticateToken from './auth/authMiddleware.js';
 
 async function GetTransactions(filterObj = {}) {
   const db = await connectDB();
@@ -16,26 +17,27 @@ async function GetTransactions(filterObj = {}) {
   if (filterObj.fromDate) query.date = { ...query.date, $gte: filterObj.fromDate };
   if (filterObj.toDate) query.date = { ...query.date, $lte: filterObj.toDate };
   if (filterObj._id) query._id = new ObjectId(filterObj._id)
+  if (filterObj.user) query.user = new ObjectId(filterObj.user)
 
   const transactions = await db.collection("transactions").find(query).sort({ date: -1 }).toArray();
   return transactions;
 }
 
 // Get all transactions (no filter)
-router.get('/api/transactions', async (req, res) => {
-  const transactions = await GetTransactions();
+router.get('/api/transactions', authenticateToken, async (req, res) => {
+  const transactions = await GetTransactions({ user: new ObjectId(req.user.id) });
   res.json(transactions);
 });
 
 // Get data by endDate and days
-async function GetStackedTransactions(endDate, days, type) {
+async function GetStackedTransactions(endDate, days, type, user) {
   const db = await connectDB();
 
-  const matchQuery = {};
+  const matchQuery = { user };
   if (type) matchQuery.type = type;
   if (endDate) matchQuery.date = { $lte: endDate };
 
-  const allDataLength = await db.collection("transactions").countDocuments(type ? { type } : {});
+  const allDataLength = await db.collection("transactions").countDocuments(type ? { type, user } : { user });
 
   const cursor = db.collection("transactions")
     .find(matchQuery)
@@ -60,17 +62,17 @@ async function GetStackedTransactions(endDate, days, type) {
   };
 }
 
-router.get("/api/transactions/filter", async (req, res) => {
+router.get("/api/transactions/filter", authenticateToken, async (req, res) => {
   const { endDate, days, type, minAmount, maxAmount, fromDate, toDate, account, category } = req.query;
 
   if (endDate && days) {
-    const { transactions, uniqueDates, totalDataLength } = await GetStackedTransactions(endDate, parseInt(days), type);
+    const { transactions, uniqueDates, totalDataLength } = await GetStackedTransactions(endDate, parseInt(days), type, new ObjectId(req.user.id));
     return res.json({ transactions, uniqueDates, totalDataLength });
   }
 
   // fallback filtering
   const transactions = await GetTransactions({
-    minAmount, maxAmount, type, fromDate, toDate, account, category,
+    minAmount, maxAmount, type, fromDate, toDate, account, category, user: req.user.id
   });
 
   const uniqueDates = [...new Set(transactions.map(t => t.date))];
@@ -83,7 +85,7 @@ router.get("/api/transactions/filter", async (req, res) => {
 });
 
 // Get a transaction by ID
-router.get('/api/transactions/:id', async (req, res) => {
+router.get('/api/transactions/:id', authenticateToken, async (req, res) => {
   const transaction = await GetTransactions({ _id: new ObjectId(req.params.id) })
   if (!transaction) {
     return res.status(404).json({ message: 'Transaction not found' })
@@ -93,7 +95,7 @@ router.get('/api/transactions/:id', async (req, res) => {
 )
 
 // Create a new transaction
-router.post('/api/transactions', async (req, res) => {
+router.post('/api/transactions', authenticateToken, async (req, res) => {
   const db = await connectDB();
   const newTransaction = req.body;
   newTransaction.account = new ObjectId(newTransaction.account);
@@ -109,7 +111,7 @@ router.post('/api/transactions', async (req, res) => {
 
 
 // Update a transaction
-router.put('/api/transactions/:id', async (req, res) => {
+router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
   const db = await connectDB();
   const { id } = req.params;
 
@@ -130,7 +132,7 @@ router.put('/api/transactions/:id', async (req, res) => {
 });
 
 // Delete a transaction
-router.delete('/api/transactions/:id', async (req, res) => {
+router.delete('/api/transactions/:id', authenticateToken, async (req, res) => {
   const db = await connectDB();
   const { id } = req.params;
 

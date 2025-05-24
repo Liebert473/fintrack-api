@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router()
 import connectDB from '../db.js';
 import { ObjectId } from 'mongodb';
+import authenticateToken from './auth/authMiddleware.js';
 
 // Utility: Connect and return 'categories' collection
 async function getCategoryCollection() {
@@ -10,20 +11,27 @@ async function getCategoryCollection() {
 }
 
 // Get all categories (with optional search)
-router.get("/api/categories", async (req, res) => {
+router.get("/api/categories", authenticateToken, async (req, res) => {
     const { search } = req.query;
     const collection = await getCategoryCollection();
 
-    const filter = search
-        ? { name: { $regex: `^${search}`, $options: "i" } }
-        : {};
+    let filter = { user: new ObjectId(req.user.id) };
+
+    if (search) {
+        filter = {
+            $and: [
+                { name: { $regex: `^${search}`, $options: 'i' } },
+                { user: new ObjectId(req.user.id) }
+            ]
+        };
+    }
 
     const categories = await collection.find(filter).toArray();
     res.json(categories);
 });
 
 // Get category by ID
-router.get("/api/categories/:id", async (req, res) => {
+router.get("/api/categories/:id", authenticateToken, async (req, res) => {
     const collection = await getCategoryCollection();
     const category = await collection.findOne({ _id: new ObjectId(req.params.id) });
 
@@ -35,7 +43,7 @@ router.get("/api/categories/:id", async (req, res) => {
 });
 
 // Create new category
-router.post("/api/categories", async (req, res) => {
+router.post("/api/categories", authenticateToken, async (req, res) => {
     const collection = await getCategoryCollection();
     const result = await collection.insertOne(req.body);
 
@@ -46,7 +54,7 @@ router.post("/api/categories", async (req, res) => {
 });
 
 // Update category and related transactions
-router.put("/api/categories/:id", async (req, res) => {
+router.put("/api/categories/:id", authenticateToken, async (req, res) => {
     const id = req.params.id;
     const collection = await getCategoryCollection();
 
@@ -76,7 +84,7 @@ router.put("/api/categories/:id", async (req, res) => {
 });
 
 // Delete category and update related transactions
-router.delete("/api/categories/:id", async (req, res) => {
+router.delete("/api/categories/:id", authenticateToken, async (req, res) => {
     const id = req.params.id;
     const collection = await getCategoryCollection();
 
