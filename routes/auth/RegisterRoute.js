@@ -26,7 +26,6 @@ router.post('/api/auth/register', async (req, res) => {
     })
 
     const token = jwt.sign({ userId: result.insertedId }, process.env.JWT_SECRET, { expiresIn: '7d' })
-    console.log(token)
     res.json({ token })
 })
 
