@@ -130,16 +130,13 @@ router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
     { returnDocument: 'after' }
   );
 
-  console.log(result)
-  console.log(result.value)
-
-  if (!result.value) {
+  if (!result) {
     return res.status(404).json({ message: 'Transaction not found' });
   }
 
   res.json({
     message: 'Transaction updated successfully',
-    transaction: result.value
+    transaction: result
   });
 })
 
