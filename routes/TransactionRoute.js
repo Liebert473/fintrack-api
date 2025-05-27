@@ -115,12 +115,14 @@ router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
   const db = await connectDB();
   const { id } = req.params;
 
+  if (!ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID' });
+
   delete req.body._id;
 
   const result = await db.collection('transactions').findOneAndUpdate(
     { _id: new ObjectId(id) },
     { $set: req.body },
-    { returnDocument: 'after' } // Return updated doc
+    { returnDocument: 'after' }
   );
 
   if (!result.value) {
@@ -131,7 +133,7 @@ router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
     message: 'Transaction updated successfully',
     transaction: result.value
   });
-});
+})
 
 // Delete a transaction
 router.delete('/api/transactions/:id', authenticateToken, async (req, res) => {
