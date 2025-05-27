@@ -65,7 +65,10 @@ router.put("/api/categories/:id", authenticateToken, async (req, res) => {
     const collection = await getCategoryCollection();
 
     const updateData = { ...req.body }
-    delete updateData._id;
+    delete updateData._id
+    delete updateData._id
+
+    updateData.category._id = new ObjectId(updateData.category._id)
 
     const updateResult = await collection.findOneAndUpdate(
         { _id: new ObjectId(id) },

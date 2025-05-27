@@ -119,6 +119,9 @@ router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
 
   const updateData = { ...req.body }
   delete updateData._id
+  delete updateData._id
+
+  updateData.category._id = new ObjectId(updateData.category._id)
 
   const result = await db.collection('transactions').findOneAndUpdate(
     { _id: new ObjectId(id) },
