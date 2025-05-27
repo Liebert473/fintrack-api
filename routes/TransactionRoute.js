@@ -117,9 +117,12 @@ router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
 
   if (!ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID' });
 
+  const updateData = { ...req.body }
+  delete updateData._id
+
   const result = await db.collection('transactions').findOneAndUpdate(
     { _id: new ObjectId(id) },
-    { $set: req.body },
+    { $set: updateData },
     { returnDocument: 'after' }
   );
 

@@ -64,11 +64,12 @@ router.put("/api/categories/:id", authenticateToken, async (req, res) => {
     const id = req.params.id;
     const collection = await getCategoryCollection();
 
-    delete req.body._id;
+    const updateData = { ...req.body }
+    delete updateData._id;
 
     const updateResult = await collection.findOneAndUpdate(
         { _id: new ObjectId(id) },
-        { $set: req.body },
+        { $set: updateData },
         { returnDocument: "after" }
     );
 

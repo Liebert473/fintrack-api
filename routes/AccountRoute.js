@@ -68,11 +68,12 @@ router.put("/api/accounts/:id", authenticateToken, async (req, res) => {
     const collection = await getAccountCollection();
     const id = req.params.id;
 
-    delete req.body._id;
+    const updateData = { ...req.body }
+    delete updateData._id
 
     const updateResult = await collection.findOneAndUpdate(
         { _id: new ObjectId(id) },
-        { $set: req.body },
+        { $set: updateData },
         { returnDocument: "after" }
     );
 
