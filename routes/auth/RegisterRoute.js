@@ -30,6 +30,19 @@ router.post('/api/auth/register', async (req, res) => {
         createdAt: new Date()
     })
 
+    db.collection('accounts').insertOne({
+        name: 'Main Account',
+        initialBalance: 0,
+        user: result.insertedId,
+    })
+
+    db.collection('categories').insertMany([
+        { name: 'Food', user: result.insertedId },
+        { name: 'Transport', user: result.insertedId },
+        { name: 'Salary', user: result.insertedId },
+        { name: 'Investment', user: result.insertedId }
+    ])
+
     const token = jwt.sign({ userId: result.insertedId }, process.env.JWT_SECRET, { expiresIn: '7d' })
     res.json({ token })
 })
