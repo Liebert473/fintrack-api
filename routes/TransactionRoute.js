@@ -129,6 +129,9 @@ router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
     { returnDocument: 'after' }
   );
 
+  console.log(result)
+  console.log(result.value)
+
   if (!result.value) {
     return res.status(404).json({ message: 'Transaction not found' });
   }
