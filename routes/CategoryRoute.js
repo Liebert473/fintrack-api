@@ -66,10 +66,9 @@ router.put("/api/categories/:id", authenticateToken, async (req, res) => {
 
     const updateData = { ...req.body }
     delete updateData._id
-    delete updateData.user
 
     const updateResult = await collection.findOneAndUpdate(
-        { _id: new ObjectId(id), user: new ObjectId(req.body.user) },
+        { _id: new ObjectId(id) },
         { $set: updateData },
         { returnDocument: "after" }
     );
