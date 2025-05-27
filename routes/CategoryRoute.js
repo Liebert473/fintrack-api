@@ -74,11 +74,11 @@ router.put("/api/categories/:id", authenticateToken, async (req, res) => {
         { returnDocument: "after" }
     );
 
-    if (!updateResult.value) {
+    if (!updateResult) {
         return res.status(404).json({ message: "Category not found" });
     }
 
-    const updatedCategory = updateResult.value;
+    const updatedCategory = updateResult;
 
     // Update all transactions with this category
     const db = await connectDB();

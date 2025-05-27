@@ -78,13 +78,13 @@ router.put("/api/accounts/:id", authenticateToken, async (req, res) => {
         { returnDocument: "after" }
     );
 
-    if (!updateResult.value) {
+    if (!updateResult) {
         return res.status(404).json({ message: "Account not found" });
     }
 
     res.json({
         message: "Account updated successfully",
-        account: updateResult.value,
+        account: updateResult,
     });
 });
 
