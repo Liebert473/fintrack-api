@@ -115,6 +115,8 @@ router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
   const db = await connectDB();
   const { id } = req.params;
 
+  delete req.body._id;
+
   const result = await db.collection('transactions').findOneAndUpdate(
     { _id: new ObjectId(id) },
     { $set: req.body },
