@@ -124,7 +124,7 @@ router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
   updateData.category._id = new ObjectId(updateData.category._id)
 
   const result = await db.collection('transactions').findOneAndUpdate(
-    { _id: new ObjectId(id) },
+    { _id: new ObjectId(id), user: new ObjectId(req.user) },
     { $set: updateData },
     { returnDocument: 'after' }
   );
