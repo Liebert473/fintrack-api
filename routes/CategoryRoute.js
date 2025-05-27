@@ -12,23 +12,29 @@ async function getCategoryCollection() {
 
 // Get all categories (with optional search)
 router.get("/api/categories", authenticateToken, async (req, res) => {
-    const { search } = req.query;
-    const collection = await getCategoryCollection();
+    try {
+        const { search } = req.query;
+        const collection = await getCategoryCollection();
 
-    let filter = { user: new ObjectId(req.user.id) };
+        let filter = { user: new ObjectId(req.user.id) };
 
-    if (search) {
-        filter = {
-            $and: [
-                { name: { $regex: `^${search}`, $options: 'i' } },
-                { user: new ObjectId(req.user.id) }
-            ]
-        };
+        if (search) {
+            filter = {
+                $and: [
+                    { name: { $regex: `^${search}`, $options: 'i' } },
+                    { user: new ObjectId(req.user.id) }
+                ]
+            };
+        }
+
+        const categories = await collection.find(filter).toArray();
+        res.json(categories);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
     }
-
-    const categories = await collection.find(filter).toArray();
-    res.json(categories);
 });
+
 
 // Get category by ID
 router.get("/api/categories/:id", authenticateToken, async (req, res) => {
@@ -45,7 +51,7 @@ router.get("/api/categories/:id", authenticateToken, async (req, res) => {
 // Create new category
 router.post("/api/categories", authenticateToken, async (req, res) => {
     const collection = await getCategoryCollection();
-    const result = await collection.insertOne(req.body);
+    const result = await collection.insertOne({ ...req.body, user: new ObjectId(req.user.id) });
 
     res.json({
         message: "Category created successfully",
@@ -73,7 +79,7 @@ router.put("/api/categories/:id", authenticateToken, async (req, res) => {
     // Update all transactions with this category
     const db = await connectDB();
     await db.collection("transactions").updateMany(
-        { "category._id": id },
+        { "category._id": new ObjectId(id) },
         { $set: { "category.name": updatedCategory.name } }
     );
 

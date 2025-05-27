@@ -12,7 +12,12 @@ router.post('/api/auth/register', async (req, res) => {
     if (!email || !password || !name || !username) return res.status(400).json({ error: 'Some reqired information are missing.' })
 
     const db = await connectDB()
-    const user = await db.collection('users').find({ email, username }).toArray()
+    const user = await db.collection('users').find({
+        $or: [
+            { email },
+            { username }
+        ]
+    }).toArray()
 
     if (user.length > 0) return res.status(409).json({ error: 'Username or email already exists.' })
 

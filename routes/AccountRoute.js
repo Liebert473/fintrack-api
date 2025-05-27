@@ -55,7 +55,7 @@ router.get("/api/accounts", authenticateToken, async (req, res) => {
 // POST: Create a new account
 router.post("/api/accounts", authenticateToken, async (req, res) => {
     const collection = await getAccountCollection();
-    const result = await collection.insertOne(req.body);
+    const result = await collection.insertOne({ ...req.body, user: new ObjectId(req.user.id) });
 
     res.json({
         message: "Account created successfully",

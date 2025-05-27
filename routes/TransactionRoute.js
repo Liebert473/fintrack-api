@@ -101,7 +101,7 @@ router.post('/api/transactions', authenticateToken, async (req, res) => {
   newTransaction.account = new ObjectId(newTransaction.account);
   newTransaction.category._id = new ObjectId(newTransaction.category._id);
 
-  const result = await db.collection('transactions').insertOne(newTransaction);
+  const result = await db.collection('transactions').insertOne({ ...newTransaction, user: new ObjectId(req.user.id) });
 
   res.status(201).json({
     message: 'Transaction created successfully',
