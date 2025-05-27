@@ -119,7 +119,7 @@ router.put('/api/transactions/:id', authenticateToken, async (req, res) => {
 
   const updateData = { ...req.body }
   delete updateData._id
-  delete updateData._id
+  delete updateData.user
 
   updateData.category._id = new ObjectId(updateData.category._id)
 
