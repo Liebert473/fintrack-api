@@ -41,7 +41,7 @@ router.post('/api/user/uploadProfile', authenticateToken, upload.single('profile
             { $set: { profileImage: result.secure_url } }
         );
 
-        res.json({ message: 'Uploaded successfully', imageUrl: result.secure_url });
+        res.json({ message: 'Profile Image uploaded successfully', imageUrl: result.secure_url });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Upload failed' });
@@ -62,5 +62,50 @@ router.get('/api/user/userProfile', authenticateToken, async (req, res) => {
     }
     res.json(user)
 })
+
+router.put('/api/user/updateProfile', authenticateToken, async (req, res) => {
+    const db = await connectDB();
+    const userId = new ObjectId(req.user.id);
+    const { name, username, email } = req.body;
+
+    if (!name || !username || !email) {
+        return res.status(400).json({ message: 'Name, username, and email are required.' });
+    }
+
+    try {
+        // Check for existing users with the same username or email (excluding current user)
+        const conflict = await db.collection('users').findOne({
+            _id: { $ne: userId },
+            $or: [{ username }, { email }]
+        });
+
+        if (conflict) {
+            return res.status(409).json({
+                message: 'Username or email already in use by another account.'
+            });
+        }
+
+        const update = { name, username, email };
+        const result = await db.collection('users').findOneAndUpdate(
+            { _id: userId },
+            { $set: update },
+            { returnDocument: 'after' }
+        );
+
+        if (!result.value) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.json({
+            message: 'Profile updated successfully.',
+            user: result.value
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error while updating profile.' });
+    }
+});
+
 
 export default router;
