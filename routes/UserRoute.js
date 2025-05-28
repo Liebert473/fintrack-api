@@ -92,13 +92,13 @@ router.put('/api/user/updateProfile', authenticateToken, async (req, res) => {
             { returnDocument: 'after' }
         );
 
-        if (!result.value) {
+        if (!result) {
             return res.status(404).json({ message: 'User not found.' });
         }
 
         res.json({
             message: 'Profile updated successfully.',
-            user: result.value
+            user: result
         });
 
     } catch (err) {
