@@ -8,6 +8,9 @@ import StatisticRoute from './routes/StatisticRoute.js'
 
 import RegisterRoute from './routes/auth/RegisterRoute.js';
 import LoginRoute from './routes/auth/LoginRoute.js';
+
+import UserRoute from './routes/UserRoute.js'
+
 import connectDB from './db.js';
 import dotenv from 'dotenv'
 dotenv.config();
@@ -26,6 +29,8 @@ app.use(TransactionRoute)
 app.use(AccountRoute)
 app.use(CategoryRoute)
 app.use(StatisticRoute)
+
+app.use(UserRoute)
 
 //Listen to the server
 app.listen(PORT, () => {
