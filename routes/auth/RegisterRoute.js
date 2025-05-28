@@ -27,7 +27,8 @@ router.post('/api/auth/register', async (req, res) => {
         username,
         name,
         passwordHash,
-        createdAt: new Date()
+        createdAt: new Date(),
+        profileImage: 'https://res.cloudinary.com/dyde6pk5k/image/upload/v1748435593/profile_images/rdffhpilkqmrnq3cbge9.jpg'
     })
 
     db.collection('accounts').insertOne({
