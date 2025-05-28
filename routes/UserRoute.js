@@ -48,4 +48,19 @@ router.post('/api/user/uploadProfile', authenticateToken, upload.single('profile
     }
 });
 
+router.get('/api/user/userProfile', authenticateToken, async (req, res) => {
+    const id = new ObjectId(req.user.id);
+
+    if (!id) {
+        res.status(400).json({ message: 'userID required' })
+    }
+
+    const db = await connectDB();
+    const user = await db.collection('users').findOne({ _id: id });
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user)
+})
+
 export default router;
