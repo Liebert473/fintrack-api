@@ -5,6 +5,7 @@ import streamifier from 'streamifier';
 import connectDB from '../db.js';
 import authenticateToken from './auth/authMiddleware.js';
 import { ObjectId } from 'mongodb';
+import bcrypt from 'bcryptjs';
 
 const router = express.Router();
 
