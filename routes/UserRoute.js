@@ -131,5 +131,49 @@ router.delete('/api/user/deleteProfile', authenticateToken, async (req, res) => 
     }
 });
 
+router.put('/api/user/updatePassword', authenticateToken, async (req, res) => {
+    const db = await connectDB();
+    const userId = new ObjectId(req.user.id);
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: 'Current password and new password are required.' });
+    }
+
+    if (currentPassword == newPassword) {
+        return res.status(400).json({ message: 'Current password and new password must not be the same.' })
+    }
+
+    try {
+        // Fetch the user to verify current password
+        const user = await db.collection('users').findOne({ _id: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Verify current password
+        const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Current password is incorrect.' });
+        }
+
+        // Hash the new password
+        const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password
+        await db.collection('users').updateOne(
+            { _id: userId },
+            { $set: { passwordHash: newPasswordHash } }
+        );
+
+        res.json({ message: 'Password updated successfully.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error while updating password.' });
+    }
+}
+);
+
 
 export default router;
