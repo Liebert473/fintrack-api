@@ -48,4 +48,5 @@ router.post('/api/auth/register', async (req, res) => {
     res.json({ token })
 })
 
+
 export default router

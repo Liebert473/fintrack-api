@@ -107,5 +107,29 @@ router.put('/api/user/updateProfile', authenticateToken, async (req, res) => {
     }
 });
 
+router.delete('/api/user/deleteProfile', authenticateToken, async (req, res) => {
+    const db = await connectDB();
+    const userId = new ObjectId(req.user.id);
+
+    try {
+        // Delete user from users collection
+        const result = await db.collection('users').deleteOne({ _id: userId });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Optionally, delete related data from other collections (e.g., accounts, categories)
+        await db.collection('accounts').deleteMany({ user: userId });
+        await db.collection('categories').deleteMany({ user: userId });
+        await db.collection('transactions').deleteMany({ user: userId })
+
+        res.json({ message: 'Profile deleted successfully.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error while deleting profile.' });
+    }
+});
+
 
 export default router;
