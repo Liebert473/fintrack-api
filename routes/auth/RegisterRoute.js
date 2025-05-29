@@ -4,6 +4,7 @@ import connectDB from '../../db.js';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { addNotification } from '../NotificationRoute.js';
 
 dotenv.config();
 
@@ -43,6 +44,9 @@ router.post('/api/auth/register', async (req, res) => {
         { name: 'Salary', user: result.insertedId },
         { name: 'Investment', user: result.insertedId }
     ])
+
+    addNotification("🎉 Welcome to FinTrack! Your account has been successfully created. Start tracking your finances and take control of your goals."
+        , result.insertedId)
 
     const token = jwt.sign({ userId: result.insertedId }, process.env.JWT_SECRET, { expiresIn: '7d' })
     res.json({ token })
