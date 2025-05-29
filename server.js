@@ -5,6 +5,7 @@ import TransactionRoute from './routes/TransactionRoute.js';
 import AccountRoute from './routes/AccountRoute.js';
 import CategoryRoute from './routes/CategoryRoute.js';
 import StatisticRoute from './routes/StatisticRoute.js'
+import NotificationRoute from './routes/NotificationRoute.js';
 
 import RegisterRoute from './routes/auth/RegisterRoute.js';
 import LoginRoute from './routes/auth/LoginRoute.js';
@@ -29,6 +30,7 @@ app.use(TransactionRoute)
 app.use(AccountRoute)
 app.use(CategoryRoute)
 app.use(StatisticRoute)
+app.use(NotificationRoute)
 
 app.use(UserRoute)
 
